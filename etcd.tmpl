@@ -1,0 +1,41 @@
+
+#!/usr/bin/python
+
+import etcd
+import sys
+from urlparse import urlparse
+
+etcd_host = "{{ .Env.ETCD_HOST }}"
+if not etcd_host:
+    print "ETCD_HOST not set"
+    sys.exit(1)
+
+port = 4001
+host = etcd_host
+
+if ":" in etcd_host:
+    host, port = etcd_host.split(":")
+
+client = etcd.Client(host=host, port=int(port))
+
+try:
+    backends = client.read("/backends")
+except KeyError:
+    client.write("/backends", None, dir=True)
+
+{{ $local := . }}
+{{range $key, $value := .}}
+{{ $addrLen := len $value.Addresses }}
+{{ if eq $addrLen 1 }}
+{{ with $address := index $value.Addresses 0 }}
+
+{{ if $address.HostPort}}
+# {{ $value.Name }}
+
+client.write("/backends/{{ $value.Image.Repository}}/{{printf "%.*s" 12 $value.ID}}", "{{ $local.Env.HOST_IP }}:{{ $address.HostPort }}", ttl=15)
+client.write("/backends/{{ $value.Image.Repository}}/port", "{{ $address.Port }}", ttl=15)
+
+{{ end }}
+{{ end }}
+{{end}}
+{{end}}
