@@ -33,3 +33,10 @@ over port 80, then one will need to use a port 80 and the other a different port
 [2]: http://jasonwilder.com/blog/2014/02/04/service-discovery-in-the-cloud/
 [3]: http://nerds.airbnb.com/smartstack-service-discovery-cloud/
 [4]: https://github.com/airbnb/nerve
+
+### TODO
+
+* Support http, udp proxying
+* Support multiple ports
+* Make ETCD prefix configurable
+* Support other backends (consul, zookeeper, redis, etc.)
