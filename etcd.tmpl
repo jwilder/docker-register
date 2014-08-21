@@ -3,6 +3,7 @@
 
 import etcd
 import sys
+import logging
 from urlparse import urlparse
 
 etcd_host = "{{ .Env.ETCD_HOST }}"
@@ -19,9 +20,9 @@ if ":" in etcd_host:
 client = etcd.Client(host=host, port=int(port))
 
 try:
-    backends = client.read("/backends")
-except KeyError:
     client.write("/backends", None, dir=True)
+except KeyError:
+	pass
 
 {{ $local := . }}
 {{range $key, $value := .}}
@@ -32,8 +33,12 @@ except KeyError:
 {{ if $address.HostPort}}
 # {{ $value.Name }}
 
-client.write("/backends/{{ $value.Image.Repository}}/{{printf "%.*s" 12 $value.ID}}", "{{ $local.Env.HOST_IP }}:{{ $address.HostPort }}", ttl=15)
-client.write("/backends/{{ $value.Image.Repository}}/port", "{{ $address.Port }}", ttl=15)
+try:
+	client.write("/backends/{{ $value.Image.Repository}}/{{printf "%.*s" 12 $value.ID}}", "{{ $local.Env.HOST_IP }}:{{ $address.HostPort }}", ttl=15)
+	client.write("/backends/{{ $value.Image.Repository}}/port", "{{ $address.Port }}", ttl=15)
+except KeyError, e:
+	logging.exception(e)
+	pass
 
 {{ end }}
 {{ end }}
