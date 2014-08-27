@@ -6,6 +6,8 @@ generates haproxy routes on the host to forward requests to registered container
 Together, they implement [service discovery][2] for docker containers with a similar architecture
 to [SmartStack][3]. docker-register is analagous to [nerve][4] in the SmartStack system.
 
+See also [Docker Service Discovery Using Etcd and Haproxy][5]
+
 ### Usage
 
 To run it:
@@ -33,6 +35,7 @@ over port 80, then one will need to use a port 80 and the other a different port
 [2]: http://jasonwilder.com/blog/2014/02/04/service-discovery-in-the-cloud/
 [3]: http://nerds.airbnb.com/smartstack-service-discovery-cloud/
 [4]: https://github.com/airbnb/nerve
+[5]: http://jasonwilder.com/blog/2014/07/15/docker-service-discovery/
 
 ### TODO
 
