@@ -24,8 +24,6 @@ If you run the container on multiple hosts, they will be grouped together automa
 
 There are a few simplications that were made:
 
-* *Containers can only expose one port* - This is a simplification but if the container `EXPOSE`s
-multiple ports, it won't be registered in etcd.
 * *Exposed ports must be unique to the service* - Each container must expose it's service on a unique
 port.  For example, if you have two different backend web services and they both expose their service
 over port 80, then one will need to use a port 80 and the other a different port.
@@ -40,6 +38,5 @@ over port 80, then one will need to use a port 80 and the other a different port
 ### TODO
 
 * Support http, udp proxying
-* Support multiple ports
 * Make ETCD prefix configurable
 * Support other backends (consul, zookeeper, redis, etc.)
