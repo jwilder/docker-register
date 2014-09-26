@@ -24,18 +24,12 @@ except KeyError:
     client.write("/backends", None, dir=True)
 
 {{ $local := . }}
-{{range $key, $value := .}}
-{{ $addrLen := len $value.Addresses }}
-{{ if eq $addrLen 1 }}
-{{ with $address := index $value.Addresses 0 }}
-
-{{ if $address.HostPort}}
-# {{ $value.Name }}
-
-client.write("/backends/{{ $value.Image.Repository}}/{{printf "%.*s" 12 $value.ID}}", "{{ $local.Env.HOST_IP }}:{{ $address.HostPort }}", ttl=15)
-client.write("/backends/{{ $value.Image.Repository}}/port", "{{ $address.Port }}", ttl=15)
-
-{{ end }}
-{{ end }}
-{{end}}
-{{end}}
+{{ range $instance := . }}
+{{   range $address := $instance.Addresses }}
+{{     if $address.HostPort}}
+# {{ $instance.Name }}
+client.write("/backends/{{ replace $instance.Image.Repository "/" "-" -1 }}-{{ $address.Port }}/{{printf "%.*s" 12 $instance.ID }}", "{{ $local.Env.HOST_IP }}:{{ $address.HostPort }}", ttl=15)
+client.write("/backends/{{ replace $instance.Image.Repository "/" "-" -1 }}-{{ $address.Port }}/port", "{{ $address.Port }}", ttl=15)
+{{     end }}
+{{   end}}
+{{ end}}
