@@ -28,8 +28,8 @@ except KeyError:
 {{   range $address := $instance.Addresses }}
 {{     if $address.HostPort}}
 # {{ $instance.Name }}
-client.write("/backends/{{ replace $instance.Image.Repository "/" "-" -1 }}-{{ $address.Port }}/{{printf "%.*s" 12 $instance.ID }}", "{{ $local.Env.HOST_IP }}:{{ $address.HostPort }}", ttl=15)
-client.write("/backends/{{ replace $instance.Image.Repository "/" "-" -1 }}-{{ $address.Port }}/port", "{{ $address.Port }}", ttl=15)
+client.write("/backends/{{ replace $instance.Name "/" "-" -1 }}-{{ $address.Port }}/{{printf "%.*s" 12 $instance.ID }}", "{{ $local.Env.HOST_IP }}:{{ $address.HostPort }}", ttl=15)
+client.write("/backends/{{ replace $instance.Name "/" "-" -1 }}-{{ $address.Port }}/port", "{{ $address.Port }}", ttl=15)
 {{     end }}
 {{   end}}
 {{ end}}
