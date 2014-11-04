@@ -29,7 +29,7 @@ except KeyError:
 {{ $servicetitle := split $instance.Name "/" }}
 {{     if $address.HostPort}}
 # {{ $instance.Name }}
-client.write("/backends/{{$servicetitle[0]}}-{{$address.Port}}/{{replace $instance.Name "/" "-" -1}}-{{$address.Port}}-{{printf "%.*s" 12 $instance.ID }}", "{{ $local.Env.HOST_IP }}:{{ $address.HostPort }}", ttl=15)
+client.write("/backends/{{index $servicetitle 0}}-{{$address.Port}}/{{replace $instance.Name "/" "-" -1}}-{{$address.Port}}-{{printf "%.*s" 12 $instance.ID }}", "{{ $local.Env.HOST_IP }}:{{ $address.HostPort }}", ttl=15)
 {{     end }}
 {{   end}}
 {{ end}}

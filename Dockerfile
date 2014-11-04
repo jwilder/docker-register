@@ -16,9 +16,9 @@ RUN go get github.com/BurntSushi/toml
 RUN go build github.com/BurntSushi/toml
 RUN go get github.com/fsouza/go-dockerclient
 RUN go build github.com/fsouza/go-dockerclient
-RUN go get github.com/alexturek/docker-gen
-RUN go build github.com/alexturek/docker-gen
-RUN go install github.com/alexturek/docker-gen
+RUN go get github.com/ombitron/docker-gen
+RUN go build github.com/ombitron/docker-gen
+RUN go install github.com/ombitron/docker-gen
 
 RUN apt-get install -y libffi-dev
 RUN pip install cffi
