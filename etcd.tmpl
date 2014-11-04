@@ -26,10 +26,10 @@ except KeyError:
 {{ $local := . }}
 {{ range $instance := . }}
 {{ range $address := $instance.Addresses }}
-{{ $servicetitle := split $instance.Image.Repository "/" }}
+{{ $servicetitle := split $instance.Name "/" }}
 {{     if $address.HostPort}}
 # {{ $instance.Name }}
-client.write("/backends/{{$servicetitle[0]}}-{{$address.Port}}/{{replace $instance.Image.Repository "/" "-" -1}}-{{$address.Port}}-{{printf "%.*s" 12 $instance.ID }}", "{{ $local.Env.HOST_IP }}:{{ $address.HostPort }}", ttl=15)
+client.write("/backends/{{$servicetitle[0]}}-{{$address.Port}}/{{replace $instance.Name "/" "-" -1}}-{{$address.Port}}-{{printf "%.*s" 12 $instance.ID }}", "{{ $local.Env.HOST_IP }}:{{ $address.HostPort }}", ttl=15)
 {{     end }}
 {{   end}}
 {{ end}}
