@@ -18,10 +18,15 @@ if ":" in etcd_host:
 
 client = etcd.Client(host=host, port=int(port))
 
+etcd_prefix = "{{ .Env.ETCD_PREFIX }}"
+if not etcd_prefix:
+    print "ETCD_PREFIX not set"
+    etcd_prefix = "/backends"
+
 try:
-    backends = client.read("/backends")
+    backends = client.read(etcd_prefix)
 except KeyError:
-    client.write("/backends", None, dir=True)
+    client.write(etcd_prefix, None, dir=True)
 
 {{ $local := . }}
 {{range $key, $value := .}}
@@ -32,8 +37,8 @@ except KeyError:
 {{ if $address.HostPort}}
 # {{ $value.Name }}
 
-client.write("/backends/{{ $value.Image.Repository}}/{{printf "%.*s" 12 $value.ID}}", "{{ $local.Env.HOST_IP }}:{{ $address.HostPort }}", ttl=15)
-client.write("/backends/{{ $value.Image.Repository}}/port", "{{ $address.Port }}", ttl=15)
+client.write(etcd_prefix+"/{{ $value.Image.Repository}}/{{printf "%.*s" 12 $value.ID}}", "{{ $local.Env.HOST_IP }}:{{ $address.HostPort }}", ttl=15)
+client.write(etcd_prefix+"/{{ $value.Image.Repository}}/port", "{{ $address.Port }}", ttl=15)
 
 {{ end }}
 {{ end }}
