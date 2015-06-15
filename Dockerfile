@@ -2,14 +2,26 @@ FROM ubuntu:14.04
 MAINTAINER Jason Wilder jwilder@litl.com
 
 RUN apt-get update
-RUN apt-get install -y wget python python-pip python-dev libssl-dev libffi-dev bash
+RUN apt-get install -y wget python python-pip python-dev libssl-dev
+RUN apt-get install -y golang git
 
 RUN mkdir /app
 WORKDIR /app
 
-RUN wget https://github.com/jwilder/docker-gen/releases/download/0.3.3/docker-gen-linux-amd64-0.3.3.tar.gz
-RUN tar xvzf docker-gen-linux-amd64-0.3.3.tar.gz -C /usr/local/bin
+RUN mkdir -p /go/src
+ENV GOPATH /go
+ENV PATH $PATH:$GOPATH/bin
 
+RUN go get github.com/BurntSushi/toml
+RUN go build github.com/BurntSushi/toml
+RUN go get github.com/fsouza/go-dockerclient
+RUN go build github.com/fsouza/go-dockerclient
+RUN go get github.com/ombitron/docker-gen
+RUN go build github.com/ombitron/docker-gen
+RUN go install github.com/ombitron/docker-gen
+
+RUN apt-get install -y libffi-dev
+RUN pip install cffi
 RUN pip install python-etcd
 
 ADD . /app
