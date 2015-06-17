@@ -5,7 +5,7 @@ test -z "$ETCD_HOST" && echo "ETCD_HOST not set" && exit 1
 
 test -z "$(echo $ETCD_HOST | cut -d':' -f2)" && ETCD_HOST="$ETCD_HOST:4001"
 
-alias etcdctl='etcdctl -C http://$ETCD_HOST --no-sync'
+etcdctl() { etcdctl -C http://$ETCD_HOST --no-sync $@; }
 
 etcdctl ls /backends || etcdctl mkdir /backends
 
