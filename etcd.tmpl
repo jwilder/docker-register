@@ -1,27 +1,11 @@
 
-#!/usr/bin/python
+#!/bin/bash
 
-import etcd
-import sys
-from urlparse import urlparse
+test -z "$(echo $ETCD_HOST | cut -d':' -f2)" && ETCD_HOST="$ETCD_HOST:4001"
 
-etcd_host = "{{ .Env.ETCD_HOST }}"
-if not etcd_host:
-    print "ETCD_HOST not set"
-    sys.exit(1)
+alias etcdctl='etcdctl -C http://$ETCD_HOST --no-sync'
 
-port = 4001
-host = etcd_host
-
-if ":" in etcd_host:
-    host, port = etcd_host.split(":")
-
-client = etcd.Client(host=host, port=int(port))
-
-try:
-    backends = client.read("/backends")
-except KeyError:
-    client.write("/backends", None, dir=True)
+etcdctl ls /backends || etcdctl mkdir /backends
 
 {{ $local := . }}
 {{range $key, $value := .}}
@@ -32,8 +16,8 @@ except KeyError:
 {{ if $address.HostPort}}
 # {{ $value.Name }}
 
-client.write("/backends/{{ $value.Image.Repository}}/{{printf "%.*s" 12 $value.ID}}", "{{ $local.Env.HOST_IP }}:{{ $address.HostPort }}", ttl=15)
-client.write("/backends/{{ $value.Image.Repository}}/port", "{{ $address.Port }}", ttl=15)
+etcdctl set --ttl 15 "/backends/{{ $value.Image.Repository}}/{{printf "%.*s" 12 $value.ID}}" "{{ $local.Env.HOST_IP }}:{{ $address.HostPort }}"
+etcdctl set --ttl 15 "/backends/{{ $value.Image.Repository}}/port" "{{ $address.Port }}"
 
 {{ end }}
 {{ end }}
