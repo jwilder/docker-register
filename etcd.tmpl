@@ -20,7 +20,7 @@ client = etcd.Client(host=host, port=int(port))
 
 try:
     backends = client.read("/backends")
-except KeyError:
+except (etcd.EtcdKeyNotFound, KeyError):
     client.write("/backends", None, dir=True)
 
 {{ $local := . }}
